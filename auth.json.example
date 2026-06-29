@@ -1,0 +1,14 @@
+{
+  "farmer": {
+    "email": "farmer@example.com",
+    "password": "password",
+    "displayName": "Demo User",
+    "userId": "1"
+  },
+  "admin": {
+    "email": "admin@example.com",
+    "password": "password",
+    "displayName": "Admin",
+    "userId": "2"
+  }
+}
