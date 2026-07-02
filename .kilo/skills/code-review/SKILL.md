@@ -1,7 +1,6 @@
 ---
 name: code-review
 description: Assists users with code review, providing feedback on code quality, best practices, and potential improvements. Use always when user asks for code review or when there are code changes to review, providing feedback on code quality, structure, readability, maintainability, and adherence to coding standards. This skill provides information on best practices for code review, including how to identify issues, suggest improvements, and communicate feedback effectively.
-allowed-tools: Bash(playwright-cli:*) Bash(npx:*) Bash(npm:*)
 ---
 
 ## Overview
@@ -89,11 +88,3 @@ Please provide:
 - Use neutral, teammate-first language (`Consider`, `Could`, `Would` instead of `You`).
 - Include a final recommendation state: `approve`, `request changes`, or `comment`.
 - save review results to a file in tests/CR/code_review_tests.md. Use for file generation format: 'branch_name_code_review_result.md'
-
-## Related skills
-
-- **playwright-cli** - Use for browsing web pages to understand application behavior when reviewing web-related code
-- **test-case-writer** - Create test cases in Markdown before implementation
-- **playwright-test-writer** - Convert Markdown plans to Playwright tests
-- **playwright-healer** - Fix failing or flaky tests
-- **playwright-reviewer** - Review test quality after implementation

@@ -4,6 +4,7 @@ trigger: always_on
 
 1. Do komunikacji z urzytkownikiem używaj zawsze języka polskiego
 2. Jeżeli nie zostaniesz o to poproszony to nie planuj lub implemetuj testów: wydajnościowych, backendowych, bezpieczeństwa 
+3. Używaj TypeScript
 
 
 Struktura projektu:

@@ -48,21 +48,21 @@
         - generic [ref=e41]:
           - generic "Total number of registered users in the Rolnopol agricultural management system" [ref=e42]:
             - generic [ref=e44]: 
-            - generic "304 registered users across all farms" [ref=e45]: "23"
+            - generic "318 registered users across all farms" [ref=e45]: "11"
             - generic [ref=e46]: Active Users
             - generic [ref=e47]:
               - text: Growing Community
               - generic [ref=e48]: 
           - generic "Total number of farms and agricultural properties managed through the platform" [ref=e49]:
             - generic [ref=e51]: 
-            - generic "304 managed farms and agricultural properties" [ref=e52]: "19"
+            - generic "318 managed farms and agricultural properties" [ref=e52]: "6"
             - generic [ref=e53]: Managed Farms
             - generic [ref=e54]:
               - text: Digital Agriculture
               - generic [ref=e55]: 
           - generic "Total agricultural land area managed across all farms in hectares and acres" [ref=e56]:
             - generic [ref=e58]: 
-            - generic "5860 hectares (14 480 acres) of agricultural land" [ref=e59]: 377,0 ha
+            - generic "5860 hectares (14 480 acres) of agricultural land" [ref=e59]: 123,0 ha
             - generic [ref=e60]: Total Area (ha)
             - generic [ref=e61]:
               - text: Land Management
@@ -76,7 +76,7 @@
               - generic [ref=e69]: 
           - generic "Total number of livestock animals including cattle, pigs, chickens, and other farm animals" [ref=e70]:
             - generic [ref=e72]: 
-            - generic "2606 livestock animals across all farms" [ref=e73]: "166"
+            - generic "2606 livestock animals across all farms" [ref=e73]: "54"
             - generic [ref=e74]: Stock Animals
             - generic [ref=e75]:
               - text: Livestock Count
@@ -88,7 +88,7 @@
             - text: Join thousands of farmers already using Rolnopol to modernize their operations
           - generic [ref=e81]:
             - generic [ref=e82]: 
-            - text: Each staff member cares for about 174 animals.
+            - text: There are about 8 animals per farm.
           - generic [ref=e83]:
             - generic [ref=e84]:
               - link " Get Started Free" [ref=e85] [cursor=pointer]:
