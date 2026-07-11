@@ -1,67 +1,53 @@
-# Code Review – HomePage E2E Tests
+# Code Review – Testy E2E strony głównej Rolnopol
+
+**Data:** 2026-07-11  
+**Gałąź/feature:** home-page  
+**Pliki poddane audytowi:**
+- `tests/config/urls.ts`
+- `tests/pages/HomePage.ts`
+- `tests/e2e/home-page.spec.ts`
+- `test-plans/home-page-test-plan.md`
 
 ## Podsumowanie
 
-Zakres recenzji: pliki `tests/page/HomePage.ts` oraz `tests/e2e/HomePage.spec.ts` dla strony głównej aplikacji Rolnopol (`localhost:3000`).
-
-Ocena ogólna: kod jest czytelny, zgodny z konwencjami POM i używa semantycznych lokatorów. Po przeprowadzonych poprawkach wszystkie 14 testów przechodzi.
+Implementacja testów E2E dla strony głównej aplikacji Rolnopol z wykorzystaniem wzorca Page Object Model. Testy pokrywają wczytywanie strony, nawigację górną, sekcję hero, karty statystyk, przyciski CTA, stopkę oraz linki zewnętrzne. Kod jest spójny, czytelny i poprawny funkcjonalnie – wszystkie 18 testów przechodzi pomyślnie.
 
 ## ✅ Mocne strony
 
-- Czysta struktura Page Object Model – logika nawigacji jest enkapsulowana w metodach `HomePage`, a testy operują na wysokim poziomie abstrakcji.
-- Poprawne użycie semantycznych lokatorów `getByRole`, `getByByText` i `getByRole('heading')` zamiast kruczych selektorów CSS.
-- Testy są poprawne językowo, nazwy opisują zachowanie biznesowe, a struktura Arrange-Act-Assert jest widoczna.
-- Brak sztucznych `waitForTimeout()` – synchronizacja opiera się na auto-waiting Playwright oraz bezpośrednich asercjach `toHaveURL`.
+- Prawidłowe zastosowanie wzorca POM – logika strony oddzielona od testów (`HomePage.ts`).
+- Centralna konfiguracja URL w `tests/config/urls.ts` – łatwa w utrzymaniu.
+- Testy pogrupowane w logiczne bloki `test.describe` (wczytanie, nawigacja, CTA, stopka).
+- Czytelne nazewnictwo metod i testów w języku polskim.
+- Linki zewnętrzne weryfikowane przez atrybut `href` bez opuszczania aplikacji – dobra praktyka.
+- Użycie selektorów roli (`getByRole`) zamiast kruchych selektorów CSS tam, gdzie to możliwe.
+- Zgodność z konfiguracją Biome (taby, podwójne cudzysłowy).
 
-## ⚠️ Uwagi / Ryzyka (High)
+## ⚠️ Uwagi i ryzyka
 
-### 1. Wrażliwe asercje na dynamiczne dane w stopce
+1. **Selektor `.navbar-brand` (HomePage.ts:21)** – używa selektora CSS zamiast roli. Choć stabilny dla tej aplikacji, jest mniej semantyczny niż `getByRole`. Akceptowalne, ponieważ logo zawiera ikonę powodującą konflikt z `exact: true` w `getByRole`.
 
-Lokalizacja: `tests/e2e/HomePage.spec.ts:146`
+2. **Selektor `getByText("© 2026 Rolnopol")` (HomePage.ts:77)** – test zakłada konkretny rok (2026) w tekście copyright. Jeśli rok się zmieni w przyszłości (np. 2027), test przestanie działać. Rozważyć użycie regexu `© \d{4} Rolnopol`.
 
-```ts
-await expect(page.getByText('© 2026 Rolnopol v1.0.113. build by')).toBeVisible();
-```
+3. **`expectExternalLinkHref` z parametrem `exact` (HomePage.ts:116)** – domyślna wartość `false` jest poprawna, ale semantyka parametru może być niejasna bez dokumentacji. Dodać komentarz opisujący parametr lub rozważyć rozdzielenie na dwie metody.
 
-Test zakłada stały ciąg wersji. Jeśli numer builda lub rok się zmieni, test spadnie. Rozwiązanie: rozbić asercję na dwie części (np. sprawdzić fragment "© 2026 Rolnopol" oraz fragment "build by" osobno) lub użyć regexu tolerującego zmianę wersji.
+4. **Globalna zmienna `homePage` (home-page.spec.ts:5)** – zmienna modułowa współdzielona między testami. W środowisku równoległym Playwright każdy worker ma osobny kontekst, ale w przypadku jednego workera i wielu testów sekwencyjnych jest to akceptowalne. Alternatywa: tworzenie instancji w każdym teście osobno.
 
-### 2. Nieaktualny seed danych w Page Object
+5. **`parseCountValue` (HomePage.ts:59-67)** – funkcja poprawnie obsługuje formaty liczbowe ("318", "5,9K ha" itd.), ale regex `(\d[\d\s.,]*)` jest zachłanny i może przechwycić nieoczekiwane fragmenty tekstu. Dla aktualnych danych działa poprawnie.
 
-Lokalizacja: `tests/page/HomePage.ts:52-57`
+6. **Brak weryfikacji URL z `toHaveURL` w `expectPageLoaded`** – metoda sprawdza tytuł i URL, ale test nawigacyjny Home (4.3) nie używa `expectPageLoaded` po kliknięciu, tylko samego `toHaveURL`. Rozważyć dodanie asercji tytułu po nawigacji powrotnej.
 
-```ts
-this.statsCards = {
-  activeUsers: page.getByText('318', { exact: true }),
-  managedFarms: page.getByText('318', { exact: true }).last(),
-  ...
-};
-```
+## 🛠️ Sugestie ulepszeń (krótkoterminowe)
 
-Wartości liczbowe są zahardcodowane. Jeśli statystyki na stronie będą się zmieniać między wersjami, testy staną się niestabilne. Rozwiązanie: aserować na etykiety (`Active Users`, `Managed Farms`) i/lub użyć atrybutów `data-testid`, o ile są dostępne.
+1. Zastąpić `getByText("© 2026 Rolnopol")` regexem odpornym na zmianę roku.
+2. Rozważyć dodanie JSDoc do metody `expectExternalLinkHref` opisującej parametr `exact`.
+3. Dodać test weryfikujący, że statystyki mają poprawne etykiety opisowe (aria-label) – zwiększy to pokrycie dostępności.
 
-## 🛠️ Sugestie / Usprawnienia (Medium)
+## 🛠️ Sugestie ulepszeń (długoterminowe)
 
-### 3. Nadmiar wywołania `goto()` w teście wejścia
+1. Rozważyć wyodrębnienie wspólnej klasy bazowej `BasePage` z metodą `goto` i asercjami wspólnymi dla wszystkich stron.
+2. Rozważyć dodanie fixture Playwright (`test.extend`) zamiast globalnej zmiennej `homePage` dla lepszej izolacji.
+3. Rozważyć dodanie testów responsywności (mobile viewport) dla strony głównej.
 
-Lokalizacja: `tests/e2e/HomePage.spec.ts:67`
+## Rekomendacja
 
-W teście `powinna mieć działające przyciski Get Started i Sign In` wywołujemy `homePage.goto()` między kliknięciami, mimo że `beforeEach` już ustawia stronę. To nie jest błąd, ale lekki nadmiar. Można uprościć strukturę testu.
-
-### 4. Brak weryfikacji istniejącej klasy .navbar-brand
-
-Lokalizacja: `tests/page/HomePage.ts:38`
-
-```ts
-this.logoLink = page.locator('.navbar-brand');
-```
-
-Selektor CSS oparty o klasę jest akceptowalny, ale jeśli zmieni się framework CSS lub zostanie usunięta klasa, test ulegnie stłuczeniu. Alternatywnie można użyć `getByRole('link', { name: 'Rolnopol' })`, który jest bardziej semantyczny i odporne na zmiany stylów.
-
-## 🟢 Rekomendacja
-
-`approve` – po wdrożonych poprawkach selektorów stopki oraz wzorca URL, kod jest stabilny i zgodny z konwencjami. Sugestie w punkcie 1 i 2 warto wdrożyć jako kolejne kroki, ale nie blokująją obecnego stanu.
-
-## Pliki objęte review
-
-- `tests/page/HomePage.ts`
-- `tests/e2e/HomePage.spec.ts`
+**Zatwierdź z drobnymi poprawkami** – kod jest poprawny i stabilny. Zalecam wdrożenie sugestii krótkoterminowych nr 1 (regex copyright) i nr 2 (JSDoc) przed ostatecznym scaleniem.
